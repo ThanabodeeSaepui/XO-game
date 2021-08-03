@@ -9,9 +9,11 @@ class XO(object):
         self.player = ["X","O"]
         self.turn_count = 0
         
-    def add_position(self, pos):
-        x = (pos-1)%3
-        y = (pos-1)//3
+    def add_position(self,numpad):
+        pos = input_processor()
+        pos.input_checker()
+        x = (pos.getPosition(numpad)-1)%3
+        y = (pos.getPosition(numpad)-1)//3
         if self.board_array[y][x] == ' ':
             self.board_array[y][x] = self.player[0]
             self.turn_count += 1
@@ -47,17 +49,43 @@ class XO(object):
             for j in i:
                 row_i += f"({j})"
             print(f"{row_i}")
-    
+class input_processor():
+    numpadArray = [[7,8,9],[4,5,6],[1,2,3]]
+    def __init__(self):
+        INPUT = input("Input : ")
+        self.Position = INPUT
+        self.input_checker()
+    def input_checker(self):
+        while True:
+            try:    
+                INPUT = int(self.Position)
+                if 0 < INPUT < 10:
+                    self.Position = INPUT
+                    break
+                else:
+                    INPUT = self.Position("Input : ")
+                    self.Position = INPUT
+            except Exception:
+                INPUT = self.Position("Input : ")
+                self.Position = INPUT
+    def getPosition(self,Numpad = False):
+        if Numpad:
+            x = (self.Position-1)%3
+            y = (self.Position-1)//3
+            return self.numpadArray[y][x]
+        else:
+            return self.Position
 game_xo = XO()
 game_xo.display_board()
+numpad = (input("Numpad (true/false) : "))
+if numpad == "true":
+    numpad = True
+else:
+    numpad = False
 while(not game_xo.check_winner()[0]):
-    INPUT = input(f"{game_xo.player[0]}'s turn : ")
-    try:
-        game_xo.add_position(int(INPUT))
-        game_xo.display_board()
-    except:
-        print("please enter 1-9")
-        game_xo.display_board()
+    print(f"{game_xo.player[0]}", end=" ")
+    game_xo.add_position(numpad)
+    game_xo.display_board()
 if game_xo.check_winner()[1]:
     print("Draw.")
 else:
